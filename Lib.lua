@@ -7,59 +7,59 @@ local Library = {}
 Library.__index = Library
 
 local function MakeDraggable(topbarobject, object)
-	local Dragging = false
-	local DragInput
-	local DragStart
-	local StartPosition
+    local Dragging = false
+    local DragInput
+    local DragStart
+    local StartPosition
 
-	local function Update(input)
-		if not (DragStart and StartPosition) then
-			return
-		end
+    local function Update(input)
+        if not (DragStart and StartPosition) then
+            return
+        end
 
-		local Delta = input.Position - DragStart
-		object.Position = UDim2.new(
-			StartPosition.X.Scale,
-			StartPosition.X.Offset + Delta.X,
-			StartPosition.Y.Scale,
-			StartPosition.Y.Offset + Delta.Y
-		)
-	end
+        local Delta = input.Position - DragStart
+        object.Position = UDim2.new(
+            StartPosition.X.Scale,
+            StartPosition.X.Offset + Delta.X,
+            StartPosition.Y.Scale,
+            StartPosition.Y.Offset + Delta.Y
+        )
+    end
 
-	topbarobject.InputBegan:Connect(function(input)
-		if input.UserInputType == Enum.UserInputType.MouseButton1
-			or input.UserInputType == Enum.UserInputType.Touch then
+    topbarobject.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1
+            or input.UserInputType == Enum.UserInputType.Touch then
 
-			Dragging = true
-			DragStart = input.Position
-			StartPosition = object.Position
+            Dragging = true
+            DragStart = input.Position
+            StartPosition = object.Position
 
-			input.Changed:Connect(function()
-				if input.UserInputState == Enum.UserInputState.End then
-					Dragging = false
-					DragInput = nil
-				end
-			)
-		end
-	end)
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then
+                    Dragging = false
+                    DragInput = nil
+                end
+            end)
+        end
+    end)
 
-	topbarobject.InputChanged:Connect(function(input)
-		if Dragging and (
-			input.UserInputType == Enum.UserInputType.MouseMovement
-			or input.UserInputType == Enum.UserInputType.Touch
-		) then
-			DragInput = input
-		end
-	end)
+    topbarobject.InputChanged:Connect(function(input)
+        if Dragging and (
+            input.UserInputType == Enum.UserInputType.MouseMovement
+            or input.UserInputType == Enum.UserInputType.Touch
+        ) then
+            DragInput = input
+        end
+    end)
 
-	UserInputService.InputChanged:Connect(function(input)
-		if Dragging and input == DragInput then
-			Update(input)
-		end
-	end)
+    UserInputService.InputChanged:Connect(function(input)
+        if Dragging and input == DragInput then
+            Update(input)
+        end
+    end)
 end
 
-local function FormatValue(Value: string | number)
+local function FormatValue(Value)
     local n = tonumber(Value)
 
     if not n then 
@@ -90,681 +90,660 @@ local function FormatValue(Value: string | number)
     return sign .. formatted .. suffixes[index]
 end
 
-function Library:CreateWindow(TitleText: string)
-	local WindowObj = {}
-	local StatsList = {}
-	local IsFullscreen = true
-	local SessionStartTime = tick()
-
-	local Xyesos = Instance.new("ScreenGui")
-	Xyesos.Name = "XyesosLib"
-
-	Xyesos.Parent = CoreGui
-
-	Xyesos.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-	Xyesos.IgnoreGuiInset = true
-	Xyesos.ResetOnSpawn = false
-
-	local FullscreenBG = Instance.new("Frame")
-	FullscreenBG.Name = "FullscreenBackground"
-	FullscreenBG.Parent = Xyesos
-	FullscreenBG.BackgroundColor3 = Color3.fromRGB(14, 19, 30)
-	FullscreenBG.BorderSizePixel = 0
-	FullscreenBG.Size = UDim2.new(1, 0, 1, 0)
-	FullscreenBG.Visible = true
-
-	-- Frosted Glass Effect: Background blur/aura
-	local GlassAura = Instance.new("ImageLabel")
-	GlassAura.Name = "GlassAura"
-	GlassAura.Parent = FullscreenBG
-	GlassAura.BackgroundTransparency = 1
-	GlassAura.Position = UDim2.new(0, -50, 0, -50)
-	GlassAura.Size = UDim2.new(1, 100, 1, 100)
-	GlassAura.Image = "rbxassetid://5079174090"
-	GlassAura.ImageColor3 = Color3.fromRGB(30, 255, 180)
-	GlassAura.ImageTransparency = 0.92
-	GlassAura.ZIndex = 0
-
-	-- Animate aura breathing effect
-	local auraTweenIn = TweenService:Create(GlassAura, TweenInfo.new(3, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {
-		ImageTransparency = 0.88
-	})
-	local auraTweenOut = TweenService:Create(GlassAura, TweenInfo.new(3, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {
-		ImageTransparency = 0.95
-	})
-
-	local function AnimateAura()
-		auraTweenIn:Play()
-		auraTweenIn.Completed:Connect(function()
-			auraTweenOut:Play()
-			auraTweenOut.Completed:Connect(function()
-				AnimateAura()
-			end)
-		end)
-	end
-	AnimateAura()
-
-	local Watermark = Instance.new("ImageLabel")
-	Watermark.Name = "Watermark"
-	Watermark.Parent = FullscreenBG
-	Watermark.BackgroundTransparency = 1.000
-	Watermark.Size = UDim2.new(1, 0, 1, 0)
-	Watermark.Image = "rbxassetid://5079174090"
-	Watermark.ImageTransparency = 0.950
-
-	local FullTitleLabel = Instance.new("TextLabel")
-	FullTitleLabel.Name = "Title"
-	FullTitleLabel.Parent = FullscreenBG
-	FullTitleLabel.BackgroundTransparency = 1.000
-	FullTitleLabel.Position = UDim2.new(0.15, 0, 0.05, 0)
-	FullTitleLabel.Size = UDim2.new(0.7, 0, 0.10, 0)
-	FullTitleLabel.Font = Enum.Font.FredokaOne
-	FullTitleLabel.Text = TitleText
-	FullTitleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-	FullTitleLabel.TextScaled = true
-	FullTitleLabel.TextWrapped = true
-
-	local FullTitleGradient = Instance.new("UIGradient")
-	FullTitleGradient.Color = ColorSequence.new({
-		ColorSequenceKeypoint.new(0, Color3.fromRGB(30, 255, 180)),
-		ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 160, 140))
-	})
-	FullTitleGradient.Rotation = 90
-	FullTitleGradient.Parent = FullTitleLabel
-
-	local FullContainer = Instance.new("Frame")
-	FullContainer.Name = "FullContainer"
-	FullContainer.Parent = FullscreenBG
-	FullContainer.BackgroundTransparency = 1
-	FullContainer.Position = UDim2.new(0.15, 0, 0.18, 0)
-	FullContainer.Size = UDim2.new(0.7, 0, 0.72, 0)
-
-	local FullListLayout = Instance.new("UIListLayout")
-	FullListLayout.Parent = FullContainer
-	FullListLayout.SortOrder = Enum.SortOrder.LayoutOrder
-	FullListLayout.Padding = UDim.new(0, 10)
-
-	local MainFrame = Instance.new("Frame")
-	MainFrame.Name = "MainFrame"
-	MainFrame.Parent = Xyesos
-	MainFrame.BackgroundColor3 = Color3.fromRGB(20, 24, 35)
-	MainFrame.Position = UDim2.new(0.5, -150, 0.5, -200)
-	MainFrame.Size = UDim2.new(0, 300, 0, 400)
-	MainFrame.BorderSizePixel = 0
-	MainFrame.Visible = false
-
-	-- Frosted Glass for MainFrame
-	local MainGlass = Instance.new("ImageLabel")
-	MainGlass.Name = "MainGlass"
-	MainGlass.Parent = MainFrame
-	MainGlass.BackgroundTransparency = 1
-	MainGlass.Position = UDim2.new(0, -20, 0, -20)
-	MainGlass.Size = UDim2.new(1, 40, 1, 40)
-	MainGlass.Image = "rbxassetid://5079174090"
-	MainGlass.ImageColor3 = Color3.fromRGB(30, 255, 180)
-	MainGlass.ImageTransparency = 0.94
-	MainGlass.ZIndex = 0
-
-	local MainCorner = Instance.new("UICorner")
-	MainCorner.CornerRadius = UDim.new(0, 8)
-	MainCorner.Parent = MainFrame
-
-	local MainStroke = Instance.new("UIStroke")
-	MainStroke.Color = Color3.fromRGB(45, 50, 65)
-	MainStroke.Thickness = 2
-	MainStroke.Parent = MainFrame
-
-	local TitleBar = Instance.new("Frame")
-	TitleBar.Name = "TitleBar"
-	TitleBar.Parent = MainFrame
-	TitleBar.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-	TitleBar.BackgroundTransparency = 1.000
-	TitleBar.Size = UDim2.new(1, 0, 0, 40)
-
-	local MiniTitleLabel = Instance.new("TextLabel")
-	MiniTitleLabel.Name = "Title"
-	MiniTitleLabel.Parent = TitleBar
-	MiniTitleLabel.BackgroundTransparency = 1.000
-	MiniTitleLabel.Position = UDim2.new(0, 15, 0, 0)
-	MiniTitleLabel.Size = UDim2.new(1, -30, 1, 0)
-	MiniTitleLabel.Font = Enum.Font.FredokaOne
-	MiniTitleLabel.Text = TitleText
-	MiniTitleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-	MiniTitleLabel.TextSize = 22
-	MiniTitleLabel.TextXAlignment = Enum.TextXAlignment.Left
-
-	local MiniTitleGradient = Instance.new("UIGradient")
-	MiniTitleGradient.Color = ColorSequence.new({
-		ColorSequenceKeypoint.new(0, Color3.fromRGB(30, 255, 180)),
-		ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 160, 140))
-	})
-	MiniTitleGradient.Rotation = 0
-	MiniTitleGradient.Parent = MiniTitleLabel
-
-	MakeDraggable(TitleBar, MainFrame)
-
-	local MiniContainer = Instance.new("ScrollingFrame")
-	MiniContainer.Name = "Container"
-	MiniContainer.Parent = MainFrame
-	MiniContainer.Active = true
-	MiniContainer.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-	MiniContainer.BackgroundTransparency = 1.000
-	MiniContainer.BorderSizePixel = 0
-	MiniContainer.Position = UDim2.new(0, 0, 0, 50)
-	MiniContainer.Size = UDim2.new(1, 0, 1, -60)
-	MiniContainer.ScrollBarThickness = 2
-	MiniContainer.ScrollBarImageColor3 = Color3.fromRGB(30, 255, 180)
-
-	local MiniListLayout = Instance.new("UIListLayout")
-	MiniListLayout.Parent = MiniContainer
-	MiniListLayout.SortOrder = Enum.SortOrder.LayoutOrder
-	MiniListLayout.Padding = UDim.new(0, 6)
-
-	local MiniPadding = Instance.new("UIPadding")
-	MiniPadding.Parent = MiniContainer
-	MiniPadding.PaddingLeft = UDim.new(0, 15)
-	MiniPadding.PaddingRight = UDim.new(0, 15)
-
-	MiniListLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-		MiniContainer.CanvasSize = UDim2.new(0, 0, 0, MiniListLayout.AbsoluteContentSize.Y + 10)
-	end)
-
-	local FloatToggleBtn = Instance.new("ImageButton")
-	FloatToggleBtn.Name = "FloatingToggle"
-	FloatToggleBtn.Parent = Xyesos
-	FloatToggleBtn.BackgroundColor3 = Color3.fromRGB(30, 255, 180)
-	FloatToggleBtn.Position = UDim2.new(0.9, 0, 0.9, -60)
-	FloatToggleBtn.Size = UDim2.new(0, 50, 0, 50)
-	FloatToggleBtn.ZIndex = 10
-	FloatToggleBtn.AutoButtonColor = true
-	FloatToggleBtn.Image = "rbxassetid://5079174090"
-
-	local FloatCorner = Instance.new("UICorner")
-	FloatCorner.CornerRadius = UDim.new(1, 0)
-	FloatCorner.Parent = FloatToggleBtn
-
-	local FloatStroke = Instance.new("UIStroke")
-	FloatStroke.Thickness = 2
-	FloatStroke.Color = Color3.fromRGB(255, 255, 255)
-	FloatStroke.Parent = FloatToggleBtn
-
-	local FloatShadow = Instance.new("ImageLabel")
-	FloatShadow.Name = "Shadow"
-	FloatShadow.Parent = FloatToggleBtn
-	FloatShadow.BackgroundTransparency = 1
-	FloatShadow.Position = UDim2.new(0, -15, 0, -15)
-	FloatShadow.Size = UDim2.new(1, 30, 1, 30)
-	FloatShadow.ZIndex = 9
-	FloatShadow.Image = "rbxassetid://5079174090"
-	FloatShadow.ImageColor3 = Color3.fromRGB(0,0,0)
-	FloatShadow.ImageTransparency = 0.6
-	FloatShadow.SliceCenter = Rect.new(10, 10, 118, 118)
-
-	local function ToggleView()
-		IsFullscreen = not IsFullscreen
-
-		if IsFullscreen then
-			FullscreenBG.Visible = true
-			MainFrame.Visible = false
-		else
-			FullscreenBG.Visible = false
-			MainFrame.Visible = true
-		end
-	end
-	MakeDraggable(FloatToggleBtn, FloatToggleBtn)
-	FloatToggleBtn.MouseButton1Click:Connect(ToggleView)
-
-	function WindowObj:AddSeperator()
-		local FullSepFrame = Instance.new("Frame")
-		FullSepFrame.Name = "SeperatorFrame"
-		FullSepFrame.Parent = FullContainer
-		FullSepFrame.BackgroundTransparency = 1
-		FullSepFrame.Size = UDim2.new(1, 0, 0, 20)
-
-		local FullLine = Instance.new("Frame")
-		FullLine.Name = "Line"
-		FullLine.Parent = FullSepFrame
-		FullLine.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-		FullLine.BorderSizePixel = 0
-		FullLine.Size = UDim2.new(1, 0, 0, 2)
-		FullLine.Position = UDim2.new(0, 0, 0.5, 0)
-
-		local FullGradient = Instance.new("UIGradient")
-		FullGradient.Color = ColorSequence.new({
-			ColorSequenceKeypoint.new(0.00, Color3.fromRGB(14, 19, 30)),
-			ColorSequenceKeypoint.new(0.50, Color3.fromRGB(30, 255, 180)),
-			ColorSequenceKeypoint.new(1.00, Color3.fromRGB(14, 19, 30))
-		})
-		FullGradient.Parent = FullLine
-
-		local MiniSpacer = Instance.new("Frame")
-		MiniSpacer.Name = "SepSpacer"
-		MiniSpacer.BackgroundTransparency = 1
-		MiniSpacer.Size = UDim2.new(1, 0, 0, 10)
-		MiniSpacer.Parent = MiniContainer
-
-		local MiniLine = Instance.new("Frame")
-		MiniLine.Name = "Seperator"
-		MiniLine.Parent = MiniSpacer
-		MiniLine.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-		MiniLine.BackgroundTransparency = 0
-		MiniLine.BorderSizePixel = 0
-		MiniLine.Size = UDim2.new(1, 0, 0, 2)
-		MiniLine.Position = UDim2.new(0, 0, 0.5, 0)
-
-		local MiniGradient = Instance.new("UIGradient")
-		MiniGradient.Color = ColorSequence.new({
-			ColorSequenceKeypoint.new(0.00, Color3.fromRGB(20, 24, 35)),
-			ColorSequenceKeypoint.new(0.50, Color3.fromRGB(30, 255, 180)),
-			ColorSequenceKeypoint.new(1.00, Color3.fromRGB(20, 24, 35))
-		})
-		MiniGradient.Parent = MiniLine
-
-		return {}
-	end
-
-	function WindowObj:AddStat(StatName: string, InitialValue: string | number, Format: boolean?)
-		local shouldFormat = if Format == nil then true else Format
-		local StatObj = {}
-		local LastValue = tonumber(InitialValue) or 0
-		local InitialValueNum = tonumber(InitialValue) or 0
-		local LastUpdateTime = tick()
-		local UpdateThrottle = 0.1 -- Throttling: max 10 updates per second
-		local PendingValue = nil
-		local ThrottleConnection = nil
-
-		-- Fullscreen Stat Card
-		local FullStatFrame = Instance.new("Frame")
-		FullStatFrame.Name = "Stat_" .. StatName
-		FullStatFrame.Parent = FullContainer
-		FullStatFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-		FullStatFrame.BackgroundTransparency = 0.95
-		FullStatFrame.BorderSizePixel = 0
-		FullStatFrame.Size = UDim2.new(1, 0, 0.06, 0)
-
-		local FullCorner = Instance.new("UICorner")
-		FullCorner.CornerRadius = UDim.new(0, 8)
-		FullCorner.Parent = FullStatFrame
-
-		-- Frosted Glass line on top of card
-		local FullGlassLine = Instance.new("Frame")
-		FullGlassLine.Name = "GlassLine"
-		FullGlassLine.Parent = FullStatFrame
-		FullGlassLine.BackgroundTransparency = 0.7
-		FullGlassLine.BackgroundColor3 = Color3.fromRGB(30, 255, 180)
-		FullGlassLine.BorderSizePixel = 0
-		FullGlassLine.Size = UDim2.new(1, 0, 0, 1)
-		FullGlassLine.Position = UDim2.new(0, 0, 0, 0)
-
-		local GlassLineGradient = Instance.new("UIGradient")
-		GlassLineGradient.Color = ColorSequence.new({
-			ColorSequenceKeypoint.new(0, Color3.fromRGB(30, 255, 180)),
-			ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 255, 255)),
-			ColorSequenceKeypoint.new(1, Color3.fromRGB(30, 255, 180))
-		})
-		GlassLineGradient.Transparency = NumberSequence.new({
-			NumberSequenceKeypoint.new(0, 1),
-			NumberSequenceKeypoint.new(0.3, 0.3),
-			NumberSequenceKeypoint.new(0.7, 0.3),
-			NumberSequenceKeypoint.new(1, 1)
-		})
-		GlassLineGradient.Parent = FullGlassLine
-
-		-- Smart-Alert Stroke (flashes red when value decreases)
-		local FullAlertStroke = Instance.new("UIStroke")
-		FullAlertStroke.Color = Color3.fromRGB(45, 50, 65)
-		FullAlertStroke.Thickness = 1.5
-		FullAlertStroke.Transparency = 1
-		FullAlertStroke.Parent = FullStatFrame
-
-		local FullStatLabel = Instance.new("TextLabel")
-		FullStatLabel.Name = "Label"
-		FullStatLabel.Parent = FullStatFrame
-		FullStatLabel.BackgroundTransparency = 1.000
-		FullStatLabel.Position = UDim2.new(0.02, 0, 0, 0)
-		FullStatLabel.Size = UDim2.new(0.48, 0, 1, 0)
-		FullStatLabel.Font = Enum.Font.GothamBold
-		FullStatLabel.Text = StatName
-		FullStatLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
-		FullStatLabel.TextScaled = true
-		FullStatLabel.TextWrapped = true
-		FullStatLabel.TextXAlignment = Enum.TextXAlignment.Left
-
-		-- Digit Shuffling: UIScale for bounce effect
-		local FullUIScale = Instance.new("UIScale")
-		FullUIScale.Parent = FullStatFrame
-		FullUIScale.Scale = 1
-
-		local FullValueLabel = Instance.new("TextLabel")
-		FullValueLabel.Name = "Value"
-		FullValueLabel.Parent = FullStatFrame
-		FullValueLabel.BackgroundTransparency = 1.000
-		FullValueLabel.Position = UDim2.new(0.5, 0, 0, 0)
-		FullValueLabel.Size = UDim2.new(0.48, 0, 1, 0)
-		FullValueLabel.Font = Enum.Font.GothamBold
-		FullValueLabel.Text = InitialValue
-		FullValueLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-		FullValueLabel.TextScaled = true
-		FullValueLabel.TextWrapped = true
-		FullValueLabel.TextXAlignment = Enum.TextXAlignment.Right
-
-		-- Gradient Text: volume effect (white top, gray bottom)
-		local FullValueGradient = Instance.new("UIGradient")
-		FullValueGradient.Color = ColorSequence.new({
-			ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)),
-			ColorSequenceKeypoint.new(1, Color3.fromRGB(180, 180, 180))
-		})
-		FullValueGradient.Parent = FullValueLabel
-
-		-- Velocity Label (income rate)
-		local FullVelocityLabel = Instance.new("TextLabel")
-		FullVelocityLabel.Name = "Velocity"
-		FullVelocityLabel.Parent = FullStatFrame
-		FullVelocityLabel.BackgroundTransparency = 1
-		FullVelocityLabel.Position = UDim2.new(0.02, 0, 0.7, 0)
-		FullVelocityLabel.Size = UDim2.new(0.96, 0, 0.25, 0)
-		FullVelocityLabel.Font = Enum.Font.Gotham
-		FullVelocityLabel.Text = ""
-		FullVelocityLabel.TextColor3 = Color3.fromRGB(30, 255, 180)
-		FullVelocityLabel.TextSize = 10
-		FullVelocityLabel.TextXAlignment = Enum.TextXAlignment.Right
-		FullVelocityLabel.TextTransparency = 0.5
-
-		-- Minimized Stat Card
-		local MiniStatFrame = Instance.new("Frame")
-		MiniStatFrame.Name = "StatFrame_" .. StatName
-		MiniStatFrame.Parent = MiniContainer
-		MiniStatFrame.BackgroundColor3 = Color3.fromRGB(30, 35, 45)
-		MiniStatFrame.BackgroundTransparency = 0.5
-		MiniStatFrame.BorderSizePixel = 0
-		MiniStatFrame.Size = UDim2.new(1, 0, 0, 45)
-
-		local MiniCorner = Instance.new("UICorner")
-		MiniCorner.CornerRadius = UDim.new(0, 6)
-		MiniCorner.Parent = MiniStatFrame
-
-		-- Mini Frosted Glass line
-		local MiniGlassLine = Instance.new("Frame")
-		MiniGlassLine.Name = "MiniGlassLine"
-		MiniGlassLine.Parent = MiniStatFrame
-		MiniGlassLine.BackgroundTransparency = 0.7
-		MiniGlassLine.BackgroundColor3 = Color3.fromRGB(30, 255, 180)
-		MiniGlassLine.BorderSizePixel = 0
-		MiniGlassLine.Size = UDim2.new(1, 0, 0, 1)
-		MiniGlassLine.Position = UDim2.new(0, 0, 0, 0)
-
-		local MiniGlassGradient = Instance.new("UIGradient")
-		MiniGlassGradient.Color = ColorSequence.new({
-			ColorSequenceKeypoint.new(0, Color3.fromRGB(30, 255, 180)),
-			ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 255, 255)),
-			ColorSequenceKeypoint.new(1, Color3.fromRGB(30, 255, 180))
-		})
-		MiniGlassGradient.Transparency = NumberSequence.new({
-			NumberSequenceKeypoint.new(0, 1),
-			NumberSequenceKeypoint.new(0.3, 0.3),
-			NumberSequenceKeypoint.new(0.7, 0.3),
-			NumberSequenceKeypoint.new(1, 1)
-		})
-		MiniGlassGradient.Parent = MiniGlassLine
-
-		-- Mini Smart-Alert Stroke
-		local MiniAlertStroke = Instance.new("UIStroke")
-		MiniAlertStroke.Color = Color3.fromRGB(45, 50, 65)
-		MiniAlertStroke.Thickness = 1.5
-		MiniAlertStroke.Transparency = 1
-		MiniAlertStroke.Parent = MiniStatFrame
-
-		local MiniUIScale = Instance.new("UIScale")
-		MiniUIScale.Parent = MiniStatFrame
-		MiniUIScale.Scale = 1
-
-		local MiniNameLabel = Instance.new("TextLabel")
-		MiniNameLabel.Name = "Name"
-		MiniNameLabel.Parent = MiniStatFrame
-		MiniNameLabel.BackgroundTransparency = 1
-		MiniNameLabel.Position = UDim2.new(0, 10, 0, 0)
-		MiniNameLabel.Size = UDim2.new(0.5, -10, 0.6, 0)
-		MiniNameLabel.Font = Enum.Font.GothamMedium
-		MiniNameLabel.Text = StatName
-		MiniNameLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
-		MiniNameLabel.TextSize = 14
-		MiniNameLabel.TextXAlignment = Enum.TextXAlignment.Left
-
-		local MiniValueLabel = Instance.new("TextLabel")
-		MiniValueLabel.Name = "Value"
-		MiniValueLabel.Parent = MiniStatFrame
-		MiniValueLabel.BackgroundTransparency = 1
-		MiniValueLabel.Position = UDim2.new(0.5, 0, 0, 0)
-		MiniValueLabel.Size = UDim2.new(0.5, -10, 0.6, 0)
-		MiniValueLabel.Font = Enum.Font.GothamBold
-		MiniValueLabel.Text = InitialValue
-		MiniValueLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-		MiniValueLabel.TextSize = 14
-		MiniValueLabel.TextXAlignment = Enum.TextXAlignment.Right
-
-		local MiniValueGradient = Instance.new("UIGradient")
-		MiniValueGradient.Color = ColorSequence.new({
-			ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)),
-			ColorSequenceKeypoint.new(1, Color3.fromRGB(180, 180, 180))
-		})
-		MiniValueGradient.Parent = MiniValueLabel
-
-		-- Mini Velocity Label
-		local MiniVelocityLabel = Instance.new("TextLabel")
-		MiniVelocityLabel.Name = "Velocity"
-		MiniVelocityLabel.Parent = MiniStatFrame
-		MiniVelocityLabel.BackgroundTransparency = 1
-		MiniVelocityLabel.Position = UDim2.new(0, 10, 0.6, 0)
-		MiniVelocityLabel.Size = UDim2.new(1, -20, 0.35, 0)
-		MiniVelocityLabel.Font = Enum.Font.Gotham
-		MiniVelocityLabel.Text = ""
-		MiniVelocityLabel.TextColor3 = Color3.fromRGB(30, 255, 180)
-		MiniVelocityLabel.TextSize = 10
-		MiniVelocityLabel.TextXAlignment = Enum.TextXAlignment.Right
-		MiniVelocityLabel.TextTransparency = 0.5
-
-		if shouldFormat then
-			FullValueLabel.Text = FormatValue(InitialValue)
-			MiniValueLabel.Text = FormatValue(InitialValue)
-		end
-
-		-- Digit Shuffling: bounce animation function
-		local function PlayDigitShuffle()
-			FullUIScale.Scale = 1.2
-			MiniUIScale.Scale = 1.15
-			TweenService:Create(FullUIScale, TweenInfo.new(0.15, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = 1}):Play()
-			TweenService:Create(MiniUIScale, TweenInfo.new(0.15, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = 1}):Play()
-		end
-
-		-- Smart-Alert: red flash when value decreases
-		local function PlayAlertFlash()
-			FullAlertStroke.Color = Color3.fromRGB(255, 60, 60)
-			FullAlertStroke.Transparency = 0
-			MiniAlertStroke.Color = Color3.fromRGB(255, 60, 60)
-			MiniAlertStroke.Transparency = 0
-
-			local fadeTween1 = TweenService:Create(FullAlertStroke, TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
-				Transparency = 1,
-				Color = Color3.fromRGB(45, 50, 65)
-			})
-			local fadeTween2 = TweenService:Create(MiniAlertStroke, TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
-				Transparency = 1,
-				Color = Color3.fromRGB(45, 50, 65)
-			})
-			fadeTween1:Play()
-			fadeTween2:Play()
-		end
-
-		-- MICRO-SHAKE: subtle shake when value decreases
-		local function PlayMicroShake()
-			local basePos = FullStatFrame.Position
-			local miniBasePos = MiniStatFrame.Position
-
-			local shakeSequence = {
-				{ X = 2, Y = -1 },
-				{ X = -3, Y = 2 },
-				{ X = 2, Y = 1 },
-				{ X = -1, Y = -2 },
-				{ X = 1, Y = 0 },
-				{ X = 0, Y = 0 },
-			}
-
-			local function ApplyShakeStep(stepIndex)
-				if stepIndex > #shakeSequence then
-					FullStatFrame.Position = basePos
-					MiniStatFrame.Position = miniBasePos
-					return
-				end
-
-				local offset = shakeSequence[stepIndex]
-				FullStatFrame.Position = UDim2.new(
-					basePos.X.Scale, basePos.X.Offset + offset.X,
-					basePos.Y.Scale, basePos.Y.Offset + offset.Y
-				)
-				MiniStatFrame.Position = UDim2.new(
-					miniBasePos.X.Scale, miniBasePos.X.Offset + offset.X,
-					miniBasePos.Y.Scale, miniBasePos.Y.Offset + offset.Y
-				)
-
-				task.delay(0.03, function()
-					ApplyShakeStep(stepIndex + 1)
-				end)
-			end
-
-			ApplyShakeStep(1)
-		end
-
-		-- Velocity calculation
-		local function UpdateVelocity(currentVal)
-			local currentTime = tick()
-			local elapsed = currentTime - SessionStartTime
-			if elapsed > 0 then
-				local diff = currentVal - InitialValueNum
-				local ratePerSecond = diff / elapsed
-				local ratePerHour = ratePerSecond * 3600
-				local rateText = ""
-				if math.abs(ratePerHour) >= 1 then
-					local sign = ratePerHour > 0 and "+" or ""
-					rateText = sign .. FormatValue(math.floor(ratePerHour * 100) / 100) .. "/h"
-				end
-				FullVelocityLabel.Text = rateText
-				MiniVelocityLabel.Text = rateText
-			end
-		end
-
-		-- Throttled Update function
-		local function ApplyUpdate(valueStr)
-			local newVal = tonumber(valueStr)
-
-			if newVal and newVal < LastValue then
-				PlayAlertFlash()
-				PlayMicroShake()
-			end
-
-			if newVal and newVal ~= LastValue then
-				PlayDigitShuffle()
-				UpdateVelocity(newVal)
-			end
-
-			FullValueLabel.Text = shouldFormat and FormatValue(valueStr) or valueStr
-			MiniValueLabel.Text = shouldFormat and FormatValue(valueStr) or valueStr
-			LastValue = newVal or LastValue
-			LastUpdateTime = tick()
-			PendingValue = nil
-		end
-
-		function StatObj:Update(NewValue)
-			local valueStr = tostring(NewValue)
-			local now = tick()
-
-			-- Throttling: if too soon, queue the update
-			if now - LastUpdateTime < UpdateThrottle then
-				PendingValue = valueStr
-				if not ThrottleConnection then
-					ThrottleConnection = task.delay(UpdateThrottle - (now - LastUpdateTime), function()
-						ThrottleConnection = nil
-						if PendingValue then
-							ApplyUpdate(PendingValue)
-						end
-					end)
-				end
-				return
-			end
-
-			ApplyUpdate(valueStr)
-		end
-
-		-- Cleanup function
-		function StatObj:Destroy()
-			if ThrottleConnection then
-				ThrottleConnection = nil
-			end
-			FullStatFrame:Destroy()
-			MiniStatFrame:Destroy()
-		end
-
-		function StatObj:SetThrottle(interval)
-			UpdateThrottle = math.max(0.016, interval or 0.1)
-		end
-
-		table.insert(StatsList, StatObj)
-		return StatObj
-	end
-
-	function WindowObj:AddButton(Text: string, Callback)
-	    local ButtonObj = {}
-
-	    local MiniBtn = Instance.new("TextButton")
-	    MiniBtn.Name = "Button_" .. Text
-	    MiniBtn.Parent = MiniContainer
-	    MiniBtn.BackgroundColor3 = Color3.fromRGB(35, 40, 55)
-	    MiniBtn.Size = UDim2.new(1, 0, 0, 35)
-	    MiniBtn.Font = Enum.Font.GothamBold
-	    MiniBtn.Text = Text
-	    MiniBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-	    MiniBtn.TextSize = 14
-		MiniBtn.AutoButtonColor = false
-
-	    local Corner = Instance.new("UICorner")
-	    Corner.CornerRadius = UDim.new(0, 6)
-	    Corner.Parent = MiniBtn
-
-		-- Button glass line effect
-		local BtnGlassLine = Instance.new("Frame")
-		BtnGlassLine.Name = "GlassLine"
-		BtnGlassLine.Parent = MiniBtn
-		BtnGlassLine.BackgroundTransparency = 0.5
-		BtnGlassLine.BackgroundColor3 = Color3.fromRGB(30, 255, 180)
-		BtnGlassLine.BorderSizePixel = 0
-		BtnGlassLine.Size = UDim2.new(1, 0, 0, 1)
-		BtnGlassLine.Position = UDim2.new(0, 0, 0, 0)
-
-		local BtnGlassGradient = Instance.new("UIGradient")
-		BtnGlassGradient.Color = ColorSequence.new({
-			ColorSequenceKeypoint.new(0, Color3.fromRGB(30, 255, 180)),
-			ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 255, 255)),
-			ColorSequenceKeypoint.new(1, Color3.fromRGB(30, 255, 180))
-		})
-		BtnGlassGradient.Transparency = NumberSequence.new({
-			NumberSequenceKeypoint.new(0, 1),
-			NumberSequenceKeypoint.new(0.3, 0.2),
-			NumberSequenceKeypoint.new(0.7, 0.2),
-			NumberSequenceKeypoint.new(1, 1)
-		})
-		BtnGlassGradient.Parent = BtnGlassLine
-
-	    MiniBtn.MouseButton1Click:Connect(function()
-	        local tween = TweenService:Create(MiniBtn, TweenInfo.new(0.1), {BackgroundColor3 = Color3.fromRGB(30, 255, 180)})
-	        tween:Play()
-	        tween.Completed:Wait()
-	        TweenService:Create(MiniBtn, TweenInfo.new(0.1), {BackgroundColor3 = Color3.fromRGB(35, 40, 55)}):Play()
-
-	        Callback()
-	    end)
-
-	    return ButtonObj
-	end
-
-	return WindowObj
+function Library:CreateWindow(TitleText)
+    local WindowObj = {}
+    local StatsList = {}
+    local IsFullscreen = true
+    local SessionStartTime = tick()
+
+    local Xyesos = Instance.new("ScreenGui")
+    Xyesos.Name = "XyesosLib"
+
+    Xyesos.Parent = CoreGui
+
+    Xyesos.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+    Xyesos.IgnoreGuiInset = true
+    Xyesos.ResetOnSpawn = false
+
+    local FullscreenBG = Instance.new("Frame")
+    FullscreenBG.Name = "FullscreenBackground"
+    FullscreenBG.Parent = Xyesos
+    FullscreenBG.BackgroundColor3 = Color3.fromRGB(14, 19, 30)
+    FullscreenBG.BorderSizePixel = 0
+    FullscreenBG.Size = UDim2.new(1, 0, 1, 0)
+    FullscreenBG.Visible = true
+
+    local GlassAura = Instance.new("ImageLabel")
+    GlassAura.Name = "GlassAura"
+    GlassAura.Parent = FullscreenBG
+    GlassAura.BackgroundTransparency = 1
+    GlassAura.Position = UDim2.new(0, -50, 0, -50)
+    GlassAura.Size = UDim2.new(1, 100, 1, 100)
+    GlassAura.Image = "rbxassetid://5079174090"
+    GlassAura.ImageColor3 = Color3.fromRGB(30, 255, 180)
+    GlassAura.ImageTransparency = 0.92
+    GlassAura.ZIndex = 0
+
+    local auraTweenIn = TweenService:Create(GlassAura, TweenInfo.new(3, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {
+        ImageTransparency = 0.88
+    })
+    local auraTweenOut = TweenService:Create(GlassAura, TweenInfo.new(3, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {
+        ImageTransparency = 0.95
+    })
+
+    local function AnimateAura()
+        auraTweenIn:Play()
+        auraTweenIn.Completed:Connect(function()
+            auraTweenOut:Play()
+            auraTweenOut.Completed:Connect(function()
+                AnimateAura()
+            end)
+        end)
+    end
+    AnimateAura()
+
+    local Watermark = Instance.new("ImageLabel")
+    Watermark.Name = "Watermark"
+    Watermark.Parent = FullscreenBG
+    Watermark.BackgroundTransparency = 1.000
+    Watermark.Size = UDim2.new(1, 0, 1, 0)
+    Watermark.Image = "rbxassetid://5079174090"
+    Watermark.ImageTransparency = 0.950
+
+    local FullTitleLabel = Instance.new("TextLabel")
+    FullTitleLabel.Name = "Title"
+    FullTitleLabel.Parent = FullscreenBG
+    FullTitleLabel.BackgroundTransparency = 1.000
+    FullTitleLabel.Position = UDim2.new(0.15, 0, 0.05, 0)
+    FullTitleLabel.Size = UDim2.new(0.7, 0, 0.10, 0)
+    FullTitleLabel.Font = Enum.Font.FredokaOne
+    FullTitleLabel.Text = TitleText
+    FullTitleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    FullTitleLabel.TextScaled = true
+    FullTitleLabel.TextWrapped = true
+
+    local FullTitleGradient = Instance.new("UIGradient")
+    FullTitleGradient.Color = ColorSequence.new({
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(30, 255, 180)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 160, 140))
+    })
+    FullTitleGradient.Rotation = 90
+    FullTitleGradient.Parent = FullTitleLabel
+
+    local FullContainer = Instance.new("Frame")
+    FullContainer.Name = "FullContainer"
+    FullContainer.Parent = FullscreenBG
+    FullContainer.BackgroundTransparency = 1
+    FullContainer.Position = UDim2.new(0.15, 0, 0.18, 0)
+    FullContainer.Size = UDim2.new(0.7, 0, 0.72, 0)
+
+    local FullListLayout = Instance.new("UIListLayout")
+    FullListLayout.Parent = FullContainer
+    FullListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+    FullListLayout.Padding = UDim.new(0, 10)
+
+    local MainFrame = Instance.new("Frame")
+    MainFrame.Name = "MainFrame"
+    MainFrame.Parent = Xyesos
+    MainFrame.BackgroundColor3 = Color3.fromRGB(20, 24, 35)
+    MainFrame.Position = UDim2.new(0.5, -150, 0.5, -200)
+    MainFrame.Size = UDim2.new(0, 300, 0, 400)
+    MainFrame.BorderSizePixel = 0
+    MainFrame.Visible = false
+
+    local MainGlass = Instance.new("ImageLabel")
+    MainGlass.Name = "MainGlass"
+    MainGlass.Parent = MainFrame
+    MainGlass.BackgroundTransparency = 1
+    MainGlass.Position = UDim2.new(0, -20, 0, -20)
+    MainGlass.Size = UDim2.new(1, 40, 1, 40)
+    MainGlass.Image = "rbxassetid://5079174090"
+    MainGlass.ImageColor3 = Color3.fromRGB(30, 255, 180)
+    MainGlass.ImageTransparency = 0.94
+    MainGlass.ZIndex = 0
+
+    local MainCorner = Instance.new("UICorner")
+    MainCorner.CornerRadius = UDim.new(0, 8)
+    MainCorner.Parent = MainFrame
+
+    local MainStroke = Instance.new("UIStroke")
+    MainStroke.Color = Color3.fromRGB(45, 50, 65)
+    MainStroke.Thickness = 2
+    MainStroke.Parent = MainFrame
+
+    local TitleBar = Instance.new("Frame")
+    TitleBar.Name = "TitleBar"
+    TitleBar.Parent = MainFrame
+    TitleBar.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    TitleBar.BackgroundTransparency = 1.000
+    TitleBar.Size = UDim2.new(1, 0, 0, 40)
+
+    local MiniTitleLabel = Instance.new("TextLabel")
+    MiniTitleLabel.Name = "Title"
+    MiniTitleLabel.Parent = TitleBar
+    MiniTitleLabel.BackgroundTransparency = 1.000
+    MiniTitleLabel.Position = UDim2.new(0, 15, 0, 0)
+    MiniTitleLabel.Size = UDim2.new(1, -30, 1, 0)
+    MiniTitleLabel.Font = Enum.Font.FredokaOne
+    MiniTitleLabel.Text = TitleText
+    MiniTitleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    MiniTitleLabel.TextSize = 22
+    MiniTitleLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+    local MiniTitleGradient = Instance.new("UIGradient")
+    MiniTitleGradient.Color = ColorSequence.new({
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(30, 255, 180)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 160, 140))
+    })
+    MiniTitleGradient.Rotation = 0
+    MiniTitleGradient.Parent = MiniTitleLabel
+
+    MakeDraggable(TitleBar, MainFrame)
+
+    local MiniContainer = Instance.new("ScrollingFrame")
+    MiniContainer.Name = "Container"
+    MiniContainer.Parent = MainFrame
+    MiniContainer.Active = true
+    MiniContainer.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    MiniContainer.BackgroundTransparency = 1.000
+    MiniContainer.BorderSizePixel = 0
+    MiniContainer.Position = UDim2.new(0, 0, 0, 50)
+    MiniContainer.Size = UDim2.new(1, 0, 1, -60)
+    MiniContainer.ScrollBarThickness = 2
+    MiniContainer.ScrollBarImageColor3 = Color3.fromRGB(30, 255, 180)
+
+    local MiniListLayout = Instance.new("UIListLayout")
+    MiniListLayout.Parent = MiniContainer
+    MiniListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+    MiniListLayout.Padding = UDim.new(0, 6)
+
+    local MiniPadding = Instance.new("UIPadding")
+    MiniPadding.Parent = MiniContainer
+    MiniPadding.PaddingLeft = UDim.new(0, 15)
+    MiniPadding.PaddingRight = UDim.new(0, 15)
+
+    MiniListLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+        MiniContainer.CanvasSize = UDim2.new(0, 0, 0, MiniListLayout.AbsoluteContentSize.Y + 10)
+    end)
+
+    local FloatToggleBtn = Instance.new("ImageButton")
+    FloatToggleBtn.Name = "FloatingToggle"
+    FloatToggleBtn.Parent = Xyesos
+    FloatToggleBtn.BackgroundColor3 = Color3.fromRGB(30, 255, 180)
+    FloatToggleBtn.Position = UDim2.new(0.9, 0, 0.9, -60)
+    FloatToggleBtn.Size = UDim2.new(0, 50, 0, 50)
+    FloatToggleBtn.ZIndex = 10
+    FloatToggleBtn.AutoButtonColor = true
+    FloatToggleBtn.Image = "rbxassetid://5079174090"
+
+    local FloatCorner = Instance.new("UICorner")
+    FloatCorner.CornerRadius = UDim.new(1, 0)
+    FloatCorner.Parent = FloatToggleBtn
+
+    local FloatStroke = Instance.new("UIStroke")
+    FloatStroke.Thickness = 2
+    FloatStroke.Color = Color3.fromRGB(255, 255, 255)
+    FloatStroke.Parent = FloatToggleBtn
+
+    local FloatShadow = Instance.new("ImageLabel")
+    FloatShadow.Name = "Shadow"
+    FloatShadow.Parent = FloatToggleBtn
+    FloatShadow.BackgroundTransparency = 1
+    FloatShadow.Position = UDim2.new(0, -15, 0, -15)
+    FloatShadow.Size = UDim2.new(1, 30, 1, 30)
+    FloatShadow.ZIndex = 9
+    FloatShadow.Image = "rbxassetid://5079174090"
+    FloatShadow.ImageColor3 = Color3.fromRGB(0,0,0)
+    FloatShadow.ImageTransparency = 0.6
+    FloatShadow.SliceCenter = Rect.new(10, 10, 118, 118)
+
+    local function ToggleView()
+        IsFullscreen = not IsFullscreen
+
+        if IsFullscreen then
+            FullscreenBG.Visible = true
+            MainFrame.Visible = false
+        else
+            FullscreenBG.Visible = false
+            MainFrame.Visible = true
+        end
+    end
+    MakeDraggable(FloatToggleBtn, FloatToggleBtn)
+    FloatToggleBtn.MouseButton1Click:Connect(ToggleView)
+
+    function WindowObj:AddSeperator()
+        local FullSepFrame = Instance.new("Frame")
+        FullSepFrame.Name = "SeperatorFrame"
+        FullSepFrame.Parent = FullContainer
+        FullSepFrame.BackgroundTransparency = 1
+        FullSepFrame.Size = UDim2.new(1, 0, 0, 20)
+
+        local FullLine = Instance.new("Frame")
+        FullLine.Name = "Line"
+        FullLine.Parent = FullSepFrame
+        FullLine.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+        FullLine.BorderSizePixel = 0
+        FullLine.Size = UDim2.new(1, 0, 0, 2)
+        FullLine.Position = UDim2.new(0, 0, 0.5, 0)
+
+        local FullGradient = Instance.new("UIGradient")
+        FullGradient.Color = ColorSequence.new({
+            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(14, 19, 30)),
+            ColorSequenceKeypoint.new(0.50, Color3.fromRGB(30, 255, 180)),
+            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(14, 19, 30))
+        })
+        FullGradient.Parent = FullLine
+
+        local MiniSpacer = Instance.new("Frame")
+        MiniSpacer.Name = "SepSpacer"
+        MiniSpacer.BackgroundTransparency = 1
+        MiniSpacer.Size = UDim2.new(1, 0, 0, 10)
+        MiniSpacer.Parent = MiniContainer
+
+        local MiniLine = Instance.new("Frame")
+        MiniLine.Name = "Seperator"
+        MiniLine.Parent = MiniSpacer
+        MiniLine.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+        MiniLine.BackgroundTransparency = 0
+        MiniLine.BorderSizePixel = 0
+        MiniLine.Size = UDim2.new(1, 0, 0, 2)
+        MiniLine.Position = UDim2.new(0, 0, 0.5, 0)
+
+        local MiniGradient = Instance.new("UIGradient")
+        MiniGradient.Color = ColorSequence.new({
+            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(20, 24, 35)),
+            ColorSequenceKeypoint.new(0.50, Color3.fromRGB(30, 255, 180)),
+            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(20, 24, 35))
+        })
+        MiniGradient.Parent = MiniLine
+
+        return {}
+    end
+
+    function WindowObj:AddStat(StatName, InitialValue, Format)
+        local shouldFormat = Format ~= false
+        local StatObj = {}
+        local LastValue = tonumber(InitialValue) or 0
+        local InitialValueNum = tonumber(InitialValue) or 0
+        local LastUpdateTime = tick()
+        local UpdateThrottle = 0.1
+        local PendingValue = nil
+        local ThrottleConnection = nil
+
+        local FullStatFrame = Instance.new("Frame")
+        FullStatFrame.Name = "Stat_" .. StatName
+        FullStatFrame.Parent = FullContainer
+        FullStatFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+        FullStatFrame.BackgroundTransparency = 0.95
+        FullStatFrame.BorderSizePixel = 0
+        FullStatFrame.Size = UDim2.new(1, 0, 0.06, 0)
+
+        local FullCorner = Instance.new("UICorner")
+        FullCorner.CornerRadius = UDim.new(0, 8)
+        FullCorner.Parent = FullStatFrame
+
+        local FullGlassLine = Instance.new("Frame")
+        FullGlassLine.Name = "GlassLine"
+        FullGlassLine.Parent = FullStatFrame
+        FullGlassLine.BackgroundTransparency = 0.7
+        FullGlassLine.BackgroundColor3 = Color3.fromRGB(30, 255, 180)
+        FullGlassLine.BorderSizePixel = 0
+        FullGlassLine.Size = UDim2.new(1, 0, 0, 1)
+        FullGlassLine.Position = UDim2.new(0, 0, 0, 0)
+
+        local GlassLineGradient = Instance.new("UIGradient")
+        GlassLineGradient.Color = ColorSequence.new({
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(30, 255, 180)),
+            ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 255, 255)),
+            ColorSequenceKeypoint.new(1, Color3.fromRGB(30, 255, 180))
+        })
+        GlassLineGradient.Transparency = NumberSequence.new({
+            NumberSequenceKeypoint.new(0, 1),
+            NumberSequenceKeypoint.new(0.3, 0.3),
+            NumberSequenceKeypoint.new(0.7, 0.3),
+            NumberSequenceKeypoint.new(1, 1)
+        })
+        GlassLineGradient.Parent = FullGlassLine
+
+        local FullAlertStroke = Instance.new("UIStroke")
+        FullAlertStroke.Color = Color3.fromRGB(45, 50, 65)
+        FullAlertStroke.Thickness = 1.5
+        FullAlertStroke.Transparency = 1
+        FullAlertStroke.Parent = FullStatFrame
+
+        local FullStatLabel = Instance.new("TextLabel")
+        FullStatLabel.Name = "Label"
+        FullStatLabel.Parent = FullStatFrame
+        FullStatLabel.BackgroundTransparency = 1.000
+        FullStatLabel.Position = UDim2.new(0.02, 0, 0, 0)
+        FullStatLabel.Size = UDim2.new(0.48, 0, 1, 0)
+        FullStatLabel.Font = Enum.Font.GothamBold
+        FullStatLabel.Text = StatName
+        FullStatLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+        FullStatLabel.TextScaled = true
+        FullStatLabel.TextWrapped = true
+        FullStatLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+        local FullUIScale = Instance.new("UIScale")
+        FullUIScale.Parent = FullStatFrame
+        FullUIScale.Scale = 1
+
+        local FullValueLabel = Instance.new("TextLabel")
+        FullValueLabel.Name = "Value"
+        FullValueLabel.Parent = FullStatFrame
+        FullValueLabel.BackgroundTransparency = 1.000
+        FullValueLabel.Position = UDim2.new(0.5, 0, 0, 0)
+        FullValueLabel.Size = UDim2.new(0.48, 0, 1, 0)
+        FullValueLabel.Font = Enum.Font.GothamBold
+        FullValueLabel.Text = InitialValue
+        FullValueLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+        FullValueLabel.TextScaled = true
+        FullValueLabel.TextWrapped = true
+        FullValueLabel.TextXAlignment = Enum.TextXAlignment.Right
+
+        local FullValueGradient = Instance.new("UIGradient")
+        FullValueGradient.Color = ColorSequence.new({
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)),
+            ColorSequenceKeypoint.new(1, Color3.fromRGB(180, 180, 180))
+        })
+        FullValueGradient.Parent = FullValueLabel
+
+        local FullVelocityLabel = Instance.new("TextLabel")
+        FullVelocityLabel.Name = "Velocity"
+        FullVelocityLabel.Parent = FullStatFrame
+        FullVelocityLabel.BackgroundTransparency = 1
+        FullVelocityLabel.Position = UDim2.new(0.02, 0, 0.7, 0)
+        FullVelocityLabel.Size = UDim2.new(0.96, 0, 0.25, 0)
+        FullVelocityLabel.Font = Enum.Font.Gotham
+        FullVelocityLabel.Text = ""
+        FullVelocityLabel.TextColor3 = Color3.fromRGB(30, 255, 180)
+        FullVelocityLabel.TextSize = 10
+        FullVelocityLabel.TextXAlignment = Enum.TextXAlignment.Right
+        FullVelocityLabel.TextTransparency = 0.5
+
+        local MiniStatFrame = Instance.new("Frame")
+        MiniStatFrame.Name = "StatFrame_" .. StatName
+        MiniStatFrame.Parent = MiniContainer
+        MiniStatFrame.BackgroundColor3 = Color3.fromRGB(30, 35, 45)
+        MiniStatFrame.BackgroundTransparency = 0.5
+        MiniStatFrame.BorderSizePixel = 0
+        MiniStatFrame.Size = UDim2.new(1, 0, 0, 45)
+
+        local MiniCorner = Instance.new("UICorner")
+        MiniCorner.CornerRadius = UDim.new(0, 6)
+        MiniCorner.Parent = MiniStatFrame
+
+        local MiniGlassLine = Instance.new("Frame")
+        MiniGlassLine.Name = "MiniGlassLine"
+        MiniGlassLine.Parent = MiniStatFrame
+        MiniGlassLine.BackgroundTransparency = 0.7
+        MiniGlassLine.BackgroundColor3 = Color3.fromRGB(30, 255, 180)
+        MiniGlassLine.BorderSizePixel = 0
+        MiniGlassLine.Size = UDim2.new(1, 0, 0, 1)
+        MiniGlassLine.Position = UDim2.new(0, 0, 0, 0)
+
+        local MiniGlassGradient = Instance.new("UIGradient")
+        MiniGlassGradient.Color = ColorSequence.new({
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(30, 255, 180)),
+            ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 255, 255)),
+            ColorSequenceKeypoint.new(1, Color3.fromRGB(30, 255, 180))
+        })
+        MiniGlassGradient.Transparency = NumberSequence.new({
+            NumberSequenceKeypoint.new(0, 1),
+            NumberSequenceKeypoint.new(0.3, 0.3),
+            NumberSequenceKeypoint.new(0.7, 0.3),
+            NumberSequenceKeypoint.new(1, 1)
+        })
+        MiniGlassGradient.Parent = MiniGlassLine
+
+        local MiniAlertStroke = Instance.new("UIStroke")
+        MiniAlertStroke.Color = Color3.fromRGB(45, 50, 65)
+        MiniAlertStroke.Thickness = 1.5
+        MiniAlertStroke.Transparency = 1
+        MiniAlertStroke.Parent = MiniStatFrame
+
+        local MiniUIScale = Instance.new("UIScale")
+        MiniUIScale.Parent = MiniStatFrame
+        MiniUIScale.Scale = 1
+
+        local MiniNameLabel = Instance.new("TextLabel")
+        MiniNameLabel.Name = "Name"
+        MiniNameLabel.Parent = MiniStatFrame
+        MiniNameLabel.BackgroundTransparency = 1
+        MiniNameLabel.Position = UDim2.new(0, 10, 0, 0)
+        MiniNameLabel.Size = UDim2.new(0.5, -10, 0.6, 0)
+        MiniNameLabel.Font = Enum.Font.GothamMedium
+        MiniNameLabel.Text = StatName
+        MiniNameLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+        MiniNameLabel.TextSize = 14
+        MiniNameLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+        local MiniValueLabel = Instance.new("TextLabel")
+        MiniValueLabel.Name = "Value"
+        MiniValueLabel.Parent = MiniStatFrame
+        MiniValueLabel.BackgroundTransparency = 1
+        MiniValueLabel.Position = UDim2.new(0.5, 0, 0, 0)
+        MiniValueLabel.Size = UDim2.new(0.5, -10, 0.6, 0)
+        MiniValueLabel.Font = Enum.Font.GothamBold
+        MiniValueLabel.Text = InitialValue
+        MiniValueLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+        MiniValueLabel.TextSize = 14
+        MiniValueLabel.TextXAlignment = Enum.TextXAlignment.Right
+
+        local MiniValueGradient = Instance.new("UIGradient")
+        MiniValueGradient.Color = ColorSequence.new({
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)),
+            ColorSequenceKeypoint.new(1, Color3.fromRGB(180, 180, 180))
+        })
+        MiniValueGradient.Parent = MiniValueLabel
+
+        local MiniVelocityLabel = Instance.new("TextLabel")
+        MiniVelocityLabel.Name = "Velocity"
+        MiniVelocityLabel.Parent = MiniStatFrame
+        MiniVelocityLabel.BackgroundTransparency = 1
+        MiniVelocityLabel.Position = UDim2.new(0, 10, 0.6, 0)
+        MiniVelocityLabel.Size = UDim2.new(1, -20, 0.35, 0)
+        MiniVelocityLabel.Font = Enum.Font.Gotham
+        MiniVelocityLabel.Text = ""
+        MiniVelocityLabel.TextColor3 = Color3.fromRGB(30, 255, 180)
+        MiniVelocityLabel.TextSize = 10
+        MiniVelocityLabel.TextXAlignment = Enum.TextXAlignment.Right
+        MiniVelocityLabel.TextTransparency = 0.5
+
+        if shouldFormat then
+            FullValueLabel.Text = FormatValue(InitialValue)
+            MiniValueLabel.Text = FormatValue(InitialValue)
+        end
+
+        local function PlayDigitShuffle()
+            FullUIScale.Scale = 1.2
+            MiniUIScale.Scale = 1.15
+            TweenService:Create(FullUIScale, TweenInfo.new(0.15, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = 1}):Play()
+            TweenService:Create(MiniUIScale, TweenInfo.new(0.15, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = 1}):Play()
+        end
+
+        local function PlayAlertFlash()
+            FullAlertStroke.Color = Color3.fromRGB(255, 60, 60)
+            FullAlertStroke.Transparency = 0
+            MiniAlertStroke.Color = Color3.fromRGB(255, 60, 60)
+            MiniAlertStroke.Transparency = 0
+
+            local fadeTween1 = TweenService:Create(FullAlertStroke, TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+                Transparency = 1,
+                Color = Color3.fromRGB(45, 50, 65)
+            })
+            local fadeTween2 = TweenService:Create(MiniAlertStroke, TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+                Transparency = 1,
+                Color = Color3.fromRGB(45, 50, 65)
+            })
+            fadeTween1:Play()
+            fadeTween2:Play()
+        end
+
+        local function PlayMicroShake()
+            local basePos = FullStatFrame.Position
+            local miniBasePos = MiniStatFrame.Position
+
+            local shakeSequence = {
+                { X = 2, Y = -1 },
+                { X = -3, Y = 2 },
+                { X = 2, Y = 1 },
+                { X = -1, Y = -2 },
+                { X = 1, Y = 0 },
+                { X = 0, Y = 0 },
+            }
+
+            local function ApplyShakeStep(stepIndex)
+                if stepIndex > #shakeSequence then
+                    FullStatFrame.Position = basePos
+                    MiniStatFrame.Position = miniBasePos
+                    return
+                end
+
+                local offset = shakeSequence[stepIndex]
+                FullStatFrame.Position = UDim2.new(
+                    basePos.X.Scale, basePos.X.Offset + offset.X,
+                    basePos.Y.Scale, basePos.Y.Offset + offset.Y
+                )
+                MiniStatFrame.Position = UDim2.new(
+                    miniBasePos.X.Scale, miniBasePos.X.Offset + offset.X,
+                    miniBasePos.Y.Scale, miniBasePos.Y.Offset + offset.Y
+                )
+
+                task.delay(0.03, function()
+                    ApplyShakeStep(stepIndex + 1)
+                end)
+            end
+
+            ApplyShakeStep(1)
+        end
+
+        local function UpdateVelocity(currentVal)
+            local currentTime = tick()
+            local elapsed = currentTime - SessionStartTime
+            if elapsed > 0 then
+                local diff = currentVal - InitialValueNum
+                local ratePerSecond = diff / elapsed
+                local ratePerHour = ratePerSecond * 3600
+                local rateText = ""
+                if math.abs(ratePerHour) >= 1 then
+                    local sign = ratePerHour > 0 and "+" or ""
+                    rateText = sign .. FormatValue(math.floor(ratePerHour * 100) / 100) .. "/h"
+                end
+                FullVelocityLabel.Text = rateText
+                MiniVelocityLabel.Text = rateText
+            end
+        end
+
+        local function ApplyUpdate(valueStr)
+            local newVal = tonumber(valueStr)
+
+            if newVal and newVal < LastValue then
+                PlayAlertFlash()
+                PlayMicroShake()
+            end
+
+            if newVal and newVal ~= LastValue then
+                PlayDigitShuffle()
+                UpdateVelocity(newVal)
+            end
+
+            FullValueLabel.Text = shouldFormat and FormatValue(valueStr) or valueStr
+            MiniValueLabel.Text = shouldFormat and FormatValue(valueStr) or valueStr
+            LastValue = newVal or LastValue
+            LastUpdateTime = tick()
+            PendingValue = nil
+        end
+
+        function StatObj:Update(NewValue)
+            local valueStr = tostring(NewValue)
+            local now = tick()
+
+            if now - LastUpdateTime < UpdateThrottle then
+                PendingValue = valueStr
+                if not ThrottleConnection then
+                    ThrottleConnection = task.delay(UpdateThrottle - (now - LastUpdateTime), function()
+                        ThrottleConnection = nil
+                        if PendingValue then
+                            ApplyUpdate(PendingValue)
+                        end
+                    end)
+                end
+                return
+            end
+
+            ApplyUpdate(valueStr)
+        end
+
+        function StatObj:Destroy()
+            if ThrottleConnection then
+                ThrottleConnection = nil
+            end
+            FullStatFrame:Destroy()
+            MiniStatFrame:Destroy()
+        end
+
+        function StatObj:SetThrottle(interval)
+            UpdateThrottle = math.max(0.016, interval or 0.1)
+        end
+
+        table.insert(StatsList, StatObj)
+        return StatObj
+    end
+
+    function WindowObj:AddButton(Text, Callback)
+        local ButtonObj = {}
+
+        local MiniBtn = Instance.new("TextButton")
+        MiniBtn.Name = "Button_" .. Text
+        MiniBtn.Parent = MiniContainer
+        MiniBtn.BackgroundColor3 = Color3.fromRGB(35, 40, 55)
+        MiniBtn.Size = UDim2.new(1, 0, 0, 35)
+        MiniBtn.Font = Enum.Font.GothamBold
+        MiniBtn.Text = Text
+        MiniBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+        MiniBtn.TextSize = 14
+        MiniBtn.AutoButtonColor = false
+
+        local Corner = Instance.new("UICorner")
+        Corner.CornerRadius = UDim.new(0, 6)
+        Corner.Parent = MiniBtn
+
+        local BtnGlassLine = Instance.new("Frame")
+        BtnGlassLine.Name = "GlassLine"
+        BtnGlassLine.Parent = MiniBtn
+        BtnGlassLine.BackgroundTransparency = 0.5
+        BtnGlassLine.BackgroundColor3 = Color3.fromRGB(30, 255, 180)
+        BtnGlassLine.BorderSizePixel = 0
+        BtnGlassLine.Size = UDim2.new(1, 0, 0, 1)
+        BtnGlassLine.Position = UDim2.new(0, 0, 0, 0)
+
+        local BtnGlassGradient = Instance.new("UIGradient")
+        BtnGlassGradient.Color = ColorSequence.new({
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(30, 255, 180)),
+            ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 255, 255)),
+            ColorSequenceKeypoint.new(1, Color3.fromRGB(30, 255, 180))
+        })
+        BtnGlassGradient.Transparency = NumberSequence.new({
+            NumberSequenceKeypoint.new(0, 1),
+            NumberSequenceKeypoint.new(0.3, 0.2),
+            NumberSequenceKeypoint.new(0.7, 0.2),
+            NumberSequenceKeypoint.new(1, 1)
+        })
+        BtnGlassGradient.Parent = BtnGlassLine
+
+        MiniBtn.MouseButton1Click:Connect(function()
+            local tween = TweenService:Create(MiniBtn, TweenInfo.new(0.1), {BackgroundColor3 = Color3.fromRGB(30, 255, 180)})
+            tween:Play()
+            tween.Completed:Wait()
+            TweenService:Create(MiniBtn, TweenInfo.new(0.1), {BackgroundColor3 = Color3.fromRGB(35, 40, 55)}):Play()
+
+            Callback()
+        end)
+
+        return ButtonObj
+    end
+
+    return WindowObj
 end
 return Library
