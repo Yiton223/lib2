@@ -7,14 +7,13 @@ local Players = game:GetService("Players")
 local HttpService = game:GetService("HttpService")
 local LocalPlayer = Players.LocalPlayer 
 
--- Обновленная функция с поддержкой дней
-function Utils:FormatTime(sec: number | string): string
-    local seconds: number = tonumber(sec) or 0
+function Utils:FormatTime(sec)
+    local seconds = tonumber(sec) or 0
 
-    local days: number = math.floor(seconds / 86400)
-    local hours: number = math.floor((seconds % 86400) / 3600)
-    local minutes: number = math.floor((seconds % 3600) / 60)
-    local secs: number = math.floor(seconds % 60)
+    local days = math.floor(seconds / 86400)
+    local hours = math.floor((seconds % 86400) / 3600)
+    local minutes = math.floor((seconds % 3600) / 60)
+    local secs = math.floor(seconds % 60)
 
     if days > 0 then
         return string.format("%d:%02d:%02d:%02d", days, hours, minutes, secs)
@@ -40,7 +39,6 @@ function Utils:GetMemory()
 end
 
 function Utils:GetPing()
-    -- Добавлена проверка на наличие стата, чтобы избежать ошибок в Studio или при лагах
     local ping = 0
     pcall(function()
         ping = Stats.Network.ServerStatsItem["Data Ping"]:GetValue()
@@ -107,7 +105,7 @@ function Utils:dump(value, seen)
         }
 
     elseif t == "function" then
-        return "[FUNCTION]" -- Вызывать функцию внутри дампа небезопасно
+        return "[FUNCTION]"
     elseif t == "userdata" then
         return "[USERDATA]"
     elseif t == "thread" then
@@ -164,7 +162,7 @@ function Utils:prettyEncode(value, level)
     end
 end
 
-function Utils:DeepCopy(orig: table, pretty: boolean)
+function Utils:DeepCopy(orig, pretty)
     if type(orig) ~= "table" then return orig end
     local dumped = Utils:dump(orig)
 
@@ -177,7 +175,6 @@ end
 
 function Utils:IsOnGround(part)
     if not part or not part:IsA("BasePart") then return false end
-    -- Использование RaycastParams (современный метод)
     local params = RaycastParams.new()
     params.FilterType = Enum.RaycastFilterType.Exclude
     params.FilterDescendantsInstances = {part}
