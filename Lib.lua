@@ -98,7 +98,6 @@ function Library:CreateWindow(TitleText)
 
     local Xyesos = Instance.new("ScreenGui")
     Xyesos.Name = "RedLib"
-
     Xyesos.Parent = CoreGui
     Xyesos.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
     Xyesos.IgnoreGuiInset = true
@@ -112,7 +111,6 @@ function Library:CreateWindow(TitleText)
     FullscreenBG.Size = UDim2.new(1, 0, 1, 0)
     FullscreenBG.Visible = true
 
-    -- Красная аура фона
     local GlassAura = Instance.new("ImageLabel")
     GlassAura.Name = "GlassAura"
     GlassAura.Parent = FullscreenBG
@@ -120,7 +118,7 @@ function Library:CreateWindow(TitleText)
     GlassAura.Position = UDim2.new(0, -50, 0, -50)
     GlassAura.Size = UDim2.new(1, 100, 1, 100)
     GlassAura.Image = "rbxassetid://5079174090"
-    GlassAura.ImageColor3 = Color3.fromRGB(255, 75, 75) -- КРАСНЫЙ ЦВЕТ
+    GlassAura.ImageColor3 = Color3.fromRGB(255, 75, 75)
     GlassAura.ImageTransparency = 0.92
     GlassAura.ZIndex = 0
 
@@ -162,11 +160,10 @@ function Library:CreateWindow(TitleText)
     FullTitleLabel.TextScaled = true
     FullTitleLabel.TextWrapped = true
 
-    -- Красный градиент заголовка
     local FullTitleGradient = Instance.new("UIGradient")
     FullTitleGradient.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 75, 75)), -- Яркий красный
-        ColorSequenceKeypoint.new(1, Color3.fromRGB(160, 35, 35))  -- Темный красный
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 75, 75)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(160, 35, 35))
     })
     FullTitleGradient.Rotation = 90
     FullTitleGradient.Parent = FullTitleLabel
@@ -192,7 +189,6 @@ function Library:CreateWindow(TitleText)
     MainFrame.BorderSizePixel = 0
     MainFrame.Visible = false
 
-    -- Красное стекло для мини-окна
     local MainGlass = Instance.new("ImageLabel")
     MainGlass.Name = "MainGlass"
     MainGlass.Parent = MainFrame
@@ -200,7 +196,7 @@ function Library:CreateWindow(TitleText)
     MainGlass.Position = UDim2.new(0, -20, 0, -20)
     MainGlass.Size = UDim2.new(1, 40, 1, 40)
     MainGlass.Image = "rbxassetid://5079174090"
-    MainGlass.ImageColor3 = Color3.fromRGB(255, 75, 75) -- КРАСНЫЙ ЦВЕТ
+    MainGlass.ImageColor3 = Color3.fromRGB(255, 75, 75)
     MainGlass.ImageTransparency = 0.94
     MainGlass.ZIndex = 0
 
@@ -209,7 +205,7 @@ function Library:CreateWindow(TitleText)
     MainCorner.Parent = MainFrame
 
     local MainStroke = Instance.new("UIStroke")
-    MainStroke.Color = Color3.fromRGB(55, 45, 45) -- Красноватый обвод
+    MainStroke.Color = Color3.fromRGB(55, 45, 45)
     MainStroke.Thickness = 2
     MainStroke.Parent = MainFrame
 
@@ -252,7 +248,7 @@ function Library:CreateWindow(TitleText)
     MiniContainer.Position = UDim2.new(0, 0, 0, 50)
     MiniContainer.Size = UDim2.new(1, 0, 1, -60)
     MiniContainer.ScrollBarThickness = 2
-    MiniContainer.ScrollBarImageColor3 = Color3.fromRGB(255, 75, 75) -- Красный скроллбар
+    MiniContainer.ScrollBarImageColor3 = Color3.fromRGB(255, 75, 75)
 
     local MiniListLayout = Instance.new("UIListLayout")
     MiniListLayout.Parent = MiniContainer
@@ -271,7 +267,7 @@ function Library:CreateWindow(TitleText)
     local FloatToggleBtn = Instance.new("ImageButton")
     FloatToggleBtn.Name = "FloatingToggle"
     FloatToggleBtn.Parent = Xyesos
-    FloatToggleBtn.BackgroundColor3 = Color3.fromRGB(255, 75, 75) -- КРАСНАЯ КНОПКА
+    FloatToggleBtn.BackgroundColor3 = Color3.fromRGB(255, 75, 75)
     FloatToggleBtn.Position = UDim2.new(0.9, 0, 0.9, -60)
     FloatToggleBtn.Size = UDim2.new(0, 50, 0, 50)
     FloatToggleBtn.ZIndex = 10
@@ -331,7 +327,7 @@ function Library:CreateWindow(TitleText)
         local FullGradient = Instance.new("UIGradient")
         FullGradient.Color = ColorSequence.new({
             ColorSequenceKeypoint.new(0.00, Color3.fromRGB(14, 19, 30)),
-            ColorSequenceKeypoint.new(0.50, Color3.fromRGB(255, 75, 75)), -- Красный разделитель
+            ColorSequenceKeypoint.new(0.50, Color3.fromRGB(255, 75, 75)),
             ColorSequenceKeypoint.new(1.00, Color3.fromRGB(14, 19, 30))
         })
         FullGradient.Parent = FullLine
@@ -371,8 +367,8 @@ function Library:CreateWindow(TitleText)
         local UpdateThrottle = 0.1
         local PendingValue = nil
         local ThrottleConnection = nil
+        local LastAnimTime = 0 -- КУЛДАУН ДЛЯ АНИМАЦИЙ (3 секунды)
 
-        -- Полноэкранный статус
         local FullStatFrame = Instance.new("Frame")
         FullStatFrame.Name = "Stat_" .. StatName
         FullStatFrame.Parent = FullContainer
@@ -385,7 +381,6 @@ function Library:CreateWindow(TitleText)
         FullCorner.CornerRadius = UDim.new(0, 8)
         FullCorner.Parent = FullStatFrame
 
-        -- Красная стеклянная линия сверху
         local FullGlassLine = Instance.new("Frame")
         FullGlassLine.Name = "GlassLine"
         FullGlassLine.Parent = FullStatFrame
@@ -447,12 +442,11 @@ function Library:CreateWindow(TitleText)
 
         local FullValueGradient = Instance.new("UIGradient")
         FullValueGradient.Color = ColorSequence.new({
-            ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 75, 75)), -- Красный градиент текста
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 75, 75)),
             ColorSequenceKeypoint.new(1, Color3.fromRGB(160, 35, 35))
         })
         FullValueGradient.Parent = FullValueLabel
 
-        -- Скорость в час (красный текст)
         local FullVelocityLabel = Instance.new("TextLabel")
         FullVelocityLabel.Name = "Velocity"
         FullVelocityLabel.Parent = FullStatFrame
@@ -461,16 +455,15 @@ function Library:CreateWindow(TitleText)
         FullVelocityLabel.Size = UDim2.new(0.96, 0, 0.25, 0)
         FullVelocityLabel.Font = Enum.Font.Gotham
         FullVelocityLabel.Text = ""
-        FullVelocityLabel.TextColor3 = Color3.fromRGB(255, 75, 75) -- Красный цвет "/h"
+        FullVelocityLabel.TextColor3 = Color3.fromRGB(255, 75, 75)
         FullVelocityLabel.TextSize = 10
         FullVelocityLabel.TextXAlignment = Enum.TextXAlignment.Right
         FullVelocityLabel.TextTransparency = 0.5
 
-        -- Мини-статус
         local MiniStatFrame = Instance.new("Frame")
         MiniStatFrame.Name = "StatFrame_" .. StatName
         MiniStatFrame.Parent = MiniContainer
-        MiniStatFrame.BackgroundColor3 = Color3.fromRGB(45, 35, 35) -- Красноватый фон карточки
+        MiniStatFrame.BackgroundColor3 = Color3.fromRGB(45, 35, 35)
         MiniStatFrame.BackgroundTransparency = 0.5
         MiniStatFrame.BorderSizePixel = 0
         MiniStatFrame.Size = UDim2.new(1, 0, 0, 45)
@@ -561,67 +554,32 @@ function Library:CreateWindow(TitleText)
             MiniValueLabel.Text = FormatValue(InitialValue)
         end
 
+        -- МЯГКАЯ АНИМАЦИЯ С КУЛДАУНОМ 3 СЕКУНДЫ
         local function PlayDigitShuffle()
-            FullUIScale.Scale = 1.2
-            MiniUIScale.Scale = 1.15
-            TweenService:Create(FullUIScale, TweenInfo.new(0.15, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = 1}):Play()
-            TweenService:Create(MiniUIScale, TweenInfo.new(0.15, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = 1}):Play()
+            if tick() - LastAnimTime < 3 then return end
+            LastAnimTime = tick()
+            
+            FullUIScale.Scale = 1.05
+            MiniUIScale.Scale = 1.05
+            TweenService:Create(FullUIScale, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Scale = 1}):Play()
+            TweenService:Create(MiniUIScale, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Scale = 1}):Play()
         end
 
+        -- БЫСТРАЯ ВСПЫШКА ПРИ ПОТЕРЕ ЗНАЧЕНИЯ
         local function PlayAlertFlash()
             FullAlertStroke.Color = Color3.fromRGB(255, 255, 255)
             FullAlertStroke.Transparency = 0
             MiniAlertStroke.Color = Color3.fromRGB(255, 255, 255)
             MiniAlertStroke.Transparency = 0
 
-            local fadeTween1 = TweenService:Create(FullAlertStroke, TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+            TweenService:Create(FullAlertStroke, TweenInfo.new(0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
                 Transparency = 1,
                 Color = Color3.fromRGB(55, 45, 45)
-            })
-            local fadeTween2 = TweenService:Create(MiniAlertStroke, TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+            }):Play()
+            TweenService:Create(MiniAlertStroke, TweenInfo.new(0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
                 Transparency = 1,
                 Color = Color3.fromRGB(55, 45, 45)
-            })
-            fadeTween1:Play()
-            fadeTween2:Play()
-        end
-
-        local function PlayMicroShake()
-            local basePos = FullStatFrame.Position
-            local miniBasePos = MiniStatFrame.Position
-
-            local shakeSequence = {
-                { X = 2, Y = -1 },
-                { X = -3, Y = 2 },
-                { X = 2, Y = 1 },
-                { X = -1, Y = -2 },
-                { X = 1, Y = 0 },
-                { X = 0, Y = 0 },
-            }
-
-            local function ApplyShakeStep(stepIndex)
-                if stepIndex > #shakeSequence then
-                    FullStatFrame.Position = basePos
-                    MiniStatFrame.Position = miniBasePos
-                    return
-                end
-
-                local offset = shakeSequence[stepIndex]
-                FullStatFrame.Position = UDim2.new(
-                    basePos.X.Scale, basePos.X.Offset + offset.X,
-                    basePos.Y.Scale, basePos.Y.Offset + offset.Y
-                )
-                MiniStatFrame.Position = UDim2.new(
-                    miniBasePos.X.Scale, miniBasePos.X.Offset + offset.X,
-                    miniBasePos.Y.Scale, miniBasePos.Y.Offset + offset.Y
-                )
-
-                task.delay(0.03, function()
-                    ApplyShakeStep(stepIndex + 1)
-                end)
-            end
-
-            ApplyShakeStep(1)
+            }):Play()
         end
 
         local function UpdateVelocity(currentVal)
@@ -646,7 +604,6 @@ function Library:CreateWindow(TitleText)
 
             if newVal and newVal < LastValue then
                 PlayAlertFlash()
-                PlayMicroShake()
             end
 
             if newVal and newVal ~= LastValue then
@@ -703,7 +660,7 @@ function Library:CreateWindow(TitleText)
         local MiniBtn = Instance.new("TextButton")
         MiniBtn.Name = "Button_" .. Text
         MiniBtn.Parent = MiniContainer
-        MiniBtn.BackgroundColor3 = Color3.fromRGB(40, 35, 35) -- Красноватый фон кнопки
+        MiniBtn.BackgroundColor3 = Color3.fromRGB(40, 35, 35)
         MiniBtn.Size = UDim2.new(1, 0, 0, 35)
         MiniBtn.Font = Enum.Font.GothamBold
         MiniBtn.Text = Text
