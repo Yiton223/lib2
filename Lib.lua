@@ -97,10 +97,9 @@ function Library:CreateWindow(TitleText)
     local SessionStartTime = tick()
 
     local Xyesos = Instance.new("ScreenGui")
-    Xyesos.Name = "XyesosLib"
+    Xyesos.Name = "RedLib"
 
     Xyesos.Parent = CoreGui
-
     Xyesos.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
     Xyesos.IgnoreGuiInset = true
     Xyesos.ResetOnSpawn = false
@@ -113,6 +112,7 @@ function Library:CreateWindow(TitleText)
     FullscreenBG.Size = UDim2.new(1, 0, 1, 0)
     FullscreenBG.Visible = true
 
+    -- Красная аура фона
     local GlassAura = Instance.new("ImageLabel")
     GlassAura.Name = "GlassAura"
     GlassAura.Parent = FullscreenBG
@@ -120,14 +120,14 @@ function Library:CreateWindow(TitleText)
     GlassAura.Position = UDim2.new(0, -50, 0, -50)
     GlassAura.Size = UDim2.new(1, 100, 1, 100)
     GlassAura.Image = "rbxassetid://5079174090"
-    GlassAura.ImageColor3 = Color3.fromRGB(30, 255, 180)
+    GlassAura.ImageColor3 = Color3.fromRGB(255, 75, 75) -- КРАСНЫЙ ЦВЕТ
     GlassAura.ImageTransparency = 0.92
     GlassAura.ZIndex = 0
 
     local auraTweenIn = TweenService:Create(GlassAura, TweenInfo.new(3, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {
         ImageTransparency = 0.88
     })
-    local auraTweenOut = TweenService:Create(GlassAura, TweenInfo.new(3, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {
+    local auraTweenOut = TweenService:Create(GlassAura, TweenInfo.new(3, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {
         ImageTransparency = 0.95
     })
 
@@ -148,7 +148,7 @@ function Library:CreateWindow(TitleText)
     Watermark.BackgroundTransparency = 1.000
     Watermark.Size = UDim2.new(1, 0, 1, 0)
     Watermark.Image = "rbxassetid://5079174090"
-    Watermark.ImageTransparency = 0.950
+    Watermark.ImageTransparency = 0.960
 
     local FullTitleLabel = Instance.new("TextLabel")
     FullTitleLabel.Name = "Title"
@@ -162,10 +162,11 @@ function Library:CreateWindow(TitleText)
     FullTitleLabel.TextScaled = true
     FullTitleLabel.TextWrapped = true
 
+    -- Красный градиент заголовка
     local FullTitleGradient = Instance.new("UIGradient")
     FullTitleGradient.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, Color3.fromRGB(30, 255, 180)),
-        ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 160, 140))
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 75, 75)), -- Яркий красный
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(160, 35, 35))  -- Темный красный
     })
     FullTitleGradient.Rotation = 90
     FullTitleGradient.Parent = FullTitleLabel
@@ -191,6 +192,7 @@ function Library:CreateWindow(TitleText)
     MainFrame.BorderSizePixel = 0
     MainFrame.Visible = false
 
+    -- Красное стекло для мини-окна
     local MainGlass = Instance.new("ImageLabel")
     MainGlass.Name = "MainGlass"
     MainGlass.Parent = MainFrame
@@ -198,7 +200,7 @@ function Library:CreateWindow(TitleText)
     MainGlass.Position = UDim2.new(0, -20, 0, -20)
     MainGlass.Size = UDim2.new(1, 40, 1, 40)
     MainGlass.Image = "rbxassetid://5079174090"
-    MainGlass.ImageColor3 = Color3.fromRGB(30, 255, 180)
+    MainGlass.ImageColor3 = Color3.fromRGB(255, 75, 75) -- КРАСНЫЙ ЦВЕТ
     MainGlass.ImageTransparency = 0.94
     MainGlass.ZIndex = 0
 
@@ -207,7 +209,7 @@ function Library:CreateWindow(TitleText)
     MainCorner.Parent = MainFrame
 
     local MainStroke = Instance.new("UIStroke")
-    MainStroke.Color = Color3.fromRGB(45, 50, 65)
+    MainStroke.Color = Color3.fromRGB(55, 45, 45) -- Красноватый обвод
     MainStroke.Thickness = 2
     MainStroke.Parent = MainFrame
 
@@ -232,8 +234,8 @@ function Library:CreateWindow(TitleText)
 
     local MiniTitleGradient = Instance.new("UIGradient")
     MiniTitleGradient.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, Color3.fromRGB(30, 255, 180)),
-        ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 160, 140))
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 75, 75)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(160, 35, 35))
     })
     MiniTitleGradient.Rotation = 0
     MiniTitleGradient.Parent = MiniTitleLabel
@@ -250,7 +252,7 @@ function Library:CreateWindow(TitleText)
     MiniContainer.Position = UDim2.new(0, 0, 0, 50)
     MiniContainer.Size = UDim2.new(1, 0, 1, -60)
     MiniContainer.ScrollBarThickness = 2
-    MiniContainer.ScrollBarImageColor3 = Color3.fromRGB(30, 255, 180)
+    MiniContainer.ScrollBarImageColor3 = Color3.fromRGB(255, 75, 75) -- Красный скроллбар
 
     local MiniListLayout = Instance.new("UIListLayout")
     MiniListLayout.Parent = MiniContainer
@@ -269,7 +271,7 @@ function Library:CreateWindow(TitleText)
     local FloatToggleBtn = Instance.new("ImageButton")
     FloatToggleBtn.Name = "FloatingToggle"
     FloatToggleBtn.Parent = Xyesos
-    FloatToggleBtn.BackgroundColor3 = Color3.fromRGB(30, 255, 180)
+    FloatToggleBtn.BackgroundColor3 = Color3.fromRGB(255, 75, 75) -- КРАСНАЯ КНОПКА
     FloatToggleBtn.Position = UDim2.new(0.9, 0, 0.9, -60)
     FloatToggleBtn.Size = UDim2.new(0, 50, 0, 50)
     FloatToggleBtn.ZIndex = 10
@@ -329,7 +331,7 @@ function Library:CreateWindow(TitleText)
         local FullGradient = Instance.new("UIGradient")
         FullGradient.Color = ColorSequence.new({
             ColorSequenceKeypoint.new(0.00, Color3.fromRGB(14, 19, 30)),
-            ColorSequenceKeypoint.new(0.50, Color3.fromRGB(30, 255, 180)),
+            ColorSequenceKeypoint.new(0.50, Color3.fromRGB(255, 75, 75)), -- Красный разделитель
             ColorSequenceKeypoint.new(1.00, Color3.fromRGB(14, 19, 30))
         })
         FullGradient.Parent = FullLine
@@ -352,7 +354,7 @@ function Library:CreateWindow(TitleText)
         local MiniGradient = Instance.new("UIGradient")
         MiniGradient.Color = ColorSequence.new({
             ColorSequenceKeypoint.new(0.00, Color3.fromRGB(20, 24, 35)),
-            ColorSequenceKeypoint.new(0.50, Color3.fromRGB(30, 255, 180)),
+            ColorSequenceKeypoint.new(0.50, Color3.fromRGB(255, 75, 75)),
             ColorSequenceKeypoint.new(1.00, Color3.fromRGB(20, 24, 35))
         })
         MiniGradient.Parent = MiniLine
@@ -370,6 +372,7 @@ function Library:CreateWindow(TitleText)
         local PendingValue = nil
         local ThrottleConnection = nil
 
+        -- Полноэкранный статус
         local FullStatFrame = Instance.new("Frame")
         FullStatFrame.Name = "Stat_" .. StatName
         FullStatFrame.Parent = FullContainer
@@ -382,20 +385,21 @@ function Library:CreateWindow(TitleText)
         FullCorner.CornerRadius = UDim.new(0, 8)
         FullCorner.Parent = FullStatFrame
 
+        -- Красная стеклянная линия сверху
         local FullGlassLine = Instance.new("Frame")
         FullGlassLine.Name = "GlassLine"
         FullGlassLine.Parent = FullStatFrame
         FullGlassLine.BackgroundTransparency = 0.7
-        FullGlassLine.BackgroundColor3 = Color3.fromRGB(30, 255, 180)
+        FullGlassLine.BackgroundColor3 = Color3.fromRGB(255, 75, 75)
         FullGlassLine.BorderSizePixel = 0
         FullGlassLine.Size = UDim2.new(1, 0, 0, 1)
         FullGlassLine.Position = UDim2.new(0, 0, 0, 0)
 
         local GlassLineGradient = Instance.new("UIGradient")
         GlassLineGradient.Color = ColorSequence.new({
-            ColorSequenceKeypoint.new(0, Color3.fromRGB(30, 255, 180)),
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 75, 75)),
             ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 255, 255)),
-            ColorSequenceKeypoint.new(1, Color3.fromRGB(30, 255, 180))
+            ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 75, 75))
         })
         GlassLineGradient.Transparency = NumberSequence.new({
             NumberSequenceKeypoint.new(0, 1),
@@ -406,7 +410,7 @@ function Library:CreateWindow(TitleText)
         GlassLineGradient.Parent = FullGlassLine
 
         local FullAlertStroke = Instance.new("UIStroke")
-        FullAlertStroke.Color = Color3.fromRGB(45, 50, 65)
+        FullAlertStroke.Color = Color3.fromRGB(55, 45, 45)
         FullAlertStroke.Thickness = 1.5
         FullAlertStroke.Transparency = 1
         FullAlertStroke.Parent = FullStatFrame
@@ -443,11 +447,12 @@ function Library:CreateWindow(TitleText)
 
         local FullValueGradient = Instance.new("UIGradient")
         FullValueGradient.Color = ColorSequence.new({
-            ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)),
-            ColorSequenceKeypoint.new(1, Color3.fromRGB(180, 180, 180))
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 75, 75)), -- Красный градиент текста
+            ColorSequenceKeypoint.new(1, Color3.fromRGB(160, 35, 35))
         })
         FullValueGradient.Parent = FullValueLabel
 
+        -- Скорость в час (красный текст)
         local FullVelocityLabel = Instance.new("TextLabel")
         FullVelocityLabel.Name = "Velocity"
         FullVelocityLabel.Parent = FullStatFrame
@@ -456,15 +461,16 @@ function Library:CreateWindow(TitleText)
         FullVelocityLabel.Size = UDim2.new(0.96, 0, 0.25, 0)
         FullVelocityLabel.Font = Enum.Font.Gotham
         FullVelocityLabel.Text = ""
-        FullVelocityLabel.TextColor3 = Color3.fromRGB(30, 255, 180)
+        FullVelocityLabel.TextColor3 = Color3.fromRGB(255, 75, 75) -- Красный цвет "/h"
         FullVelocityLabel.TextSize = 10
         FullVelocityLabel.TextXAlignment = Enum.TextXAlignment.Right
         FullVelocityLabel.TextTransparency = 0.5
 
+        -- Мини-статус
         local MiniStatFrame = Instance.new("Frame")
         MiniStatFrame.Name = "StatFrame_" .. StatName
         MiniStatFrame.Parent = MiniContainer
-        MiniStatFrame.BackgroundColor3 = Color3.fromRGB(30, 35, 45)
+        MiniStatFrame.BackgroundColor3 = Color3.fromRGB(45, 35, 35) -- Красноватый фон карточки
         MiniStatFrame.BackgroundTransparency = 0.5
         MiniStatFrame.BorderSizePixel = 0
         MiniStatFrame.Size = UDim2.new(1, 0, 0, 45)
@@ -477,16 +483,16 @@ function Library:CreateWindow(TitleText)
         MiniGlassLine.Name = "MiniGlassLine"
         MiniGlassLine.Parent = MiniStatFrame
         MiniGlassLine.BackgroundTransparency = 0.7
-        MiniGlassLine.BackgroundColor3 = Color3.fromRGB(30, 255, 180)
+        MiniGlassLine.BackgroundColor3 = Color3.fromRGB(255, 75, 75)
         MiniGlassLine.BorderSizePixel = 0
         MiniGlassLine.Size = UDim2.new(1, 0, 0, 1)
         MiniGlassLine.Position = UDim2.new(0, 0, 0, 0)
 
         local MiniGlassGradient = Instance.new("UIGradient")
         MiniGlassGradient.Color = ColorSequence.new({
-            ColorSequenceKeypoint.new(0, Color3.fromRGB(30, 255, 180)),
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 75, 75)),
             ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 255, 255)),
-            ColorSequenceKeypoint.new(1, Color3.fromRGB(30, 255, 180))
+            ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 75, 75))
         })
         MiniGlassGradient.Transparency = NumberSequence.new({
             NumberSequenceKeypoint.new(0, 1),
@@ -497,7 +503,7 @@ function Library:CreateWindow(TitleText)
         MiniGlassGradient.Parent = MiniGlassLine
 
         local MiniAlertStroke = Instance.new("UIStroke")
-        MiniAlertStroke.Color = Color3.fromRGB(45, 50, 65)
+        MiniAlertStroke.Color = Color3.fromRGB(55, 45, 45)
         MiniAlertStroke.Thickness = 1.5
         MiniAlertStroke.Transparency = 1
         MiniAlertStroke.Parent = MiniStatFrame
@@ -532,8 +538,8 @@ function Library:CreateWindow(TitleText)
 
         local MiniValueGradient = Instance.new("UIGradient")
         MiniValueGradient.Color = ColorSequence.new({
-            ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)),
-            ColorSequenceKeypoint.new(1, Color3.fromRGB(180, 180, 180))
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 75, 75)),
+            ColorSequenceKeypoint.new(1, Color3.fromRGB(160, 35, 35))
         })
         MiniValueGradient.Parent = MiniValueLabel
 
@@ -545,7 +551,7 @@ function Library:CreateWindow(TitleText)
         MiniVelocityLabel.Size = UDim2.new(1, -20, 0.35, 0)
         MiniVelocityLabel.Font = Enum.Font.Gotham
         MiniVelocityLabel.Text = ""
-        MiniVelocityLabel.TextColor3 = Color3.fromRGB(30, 255, 180)
+        MiniVelocityLabel.TextColor3 = Color3.fromRGB(255, 75, 75)
         MiniVelocityLabel.TextSize = 10
         MiniVelocityLabel.TextXAlignment = Enum.TextXAlignment.Right
         MiniVelocityLabel.TextTransparency = 0.5
@@ -563,18 +569,18 @@ function Library:CreateWindow(TitleText)
         end
 
         local function PlayAlertFlash()
-            FullAlertStroke.Color = Color3.fromRGB(255, 60, 60)
+            FullAlertStroke.Color = Color3.fromRGB(255, 255, 255)
             FullAlertStroke.Transparency = 0
-            MiniAlertStroke.Color = Color3.fromRGB(255, 60, 60)
+            MiniAlertStroke.Color = Color3.fromRGB(255, 255, 255)
             MiniAlertStroke.Transparency = 0
 
             local fadeTween1 = TweenService:Create(FullAlertStroke, TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
                 Transparency = 1,
-                Color = Color3.fromRGB(45, 50, 65)
+                Color = Color3.fromRGB(55, 45, 45)
             })
             local fadeTween2 = TweenService:Create(MiniAlertStroke, TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
                 Transparency = 1,
-                Color = Color3.fromRGB(45, 50, 65)
+                Color = Color3.fromRGB(55, 45, 45)
             })
             fadeTween1:Play()
             fadeTween2:Play()
@@ -697,7 +703,7 @@ function Library:CreateWindow(TitleText)
         local MiniBtn = Instance.new("TextButton")
         MiniBtn.Name = "Button_" .. Text
         MiniBtn.Parent = MiniContainer
-        MiniBtn.BackgroundColor3 = Color3.fromRGB(35, 40, 55)
+        MiniBtn.BackgroundColor3 = Color3.fromRGB(40, 35, 35) -- Красноватый фон кнопки
         MiniBtn.Size = UDim2.new(1, 0, 0, 35)
         MiniBtn.Font = Enum.Font.GothamBold
         MiniBtn.Text = Text
@@ -713,16 +719,16 @@ function Library:CreateWindow(TitleText)
         BtnGlassLine.Name = "GlassLine"
         BtnGlassLine.Parent = MiniBtn
         BtnGlassLine.BackgroundTransparency = 0.5
-        BtnGlassLine.BackgroundColor3 = Color3.fromRGB(30, 255, 180)
+        BtnGlassLine.BackgroundColor3 = Color3.fromRGB(255, 75, 75)
         BtnGlassLine.BorderSizePixel = 0
         BtnGlassLine.Size = UDim2.new(1, 0, 0, 1)
         BtnGlassLine.Position = UDim2.new(0, 0, 0, 0)
 
         local BtnGlassGradient = Instance.new("UIGradient")
         BtnGlassGradient.Color = ColorSequence.new({
-            ColorSequenceKeypoint.new(0, Color3.fromRGB(30, 255, 180)),
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 75, 75)),
             ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 255, 255)),
-            ColorSequenceKeypoint.new(1, Color3.fromRGB(30, 255, 180))
+            ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 75, 75))
         })
         BtnGlassGradient.Transparency = NumberSequence.new({
             NumberSequenceKeypoint.new(0, 1),
@@ -733,10 +739,10 @@ function Library:CreateWindow(TitleText)
         BtnGlassGradient.Parent = BtnGlassLine
 
         MiniBtn.MouseButton1Click:Connect(function()
-            local tween = TweenService:Create(MiniBtn, TweenInfo.new(0.1), {BackgroundColor3 = Color3.fromRGB(30, 255, 180)})
+            local tween = TweenService:Create(MiniBtn, TweenInfo.new(0.1), {BackgroundColor3 = Color3.fromRGB(255, 75, 75)})
             tween:Play()
             tween.Completed:Wait()
-            TweenService:Create(MiniBtn, TweenInfo.new(0.1), {BackgroundColor3 = Color3.fromRGB(35, 40, 55)}):Play()
+            TweenService:Create(MiniBtn, TweenInfo.new(0.1), {BackgroundColor3 = Color3.fromRGB(40, 35, 35)}):Play()
 
             Callback()
         end)
