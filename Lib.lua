@@ -131,10 +131,10 @@ function Library:CreateWindow(TitleText: string)
             Tooltip.Text = text
             Tooltip.Visible = true
         end)
-        object.MouseMoved:Connect(function(input)
-            local x = input and input.Position and input.Position.X or 0
-            local y = input and input.Position and input.Position.Y or 0
-            Tooltip.Position = UDim2.new(0, x + 15, 0, y + 15)
+        object.MouseMoved:Connect(function(x, y)
+            local mx = tonumber(x) or 0
+            local my = tonumber(y) or 0
+            Tooltip.Position = UDim2.new(0, mx + 15, 0, my + 15)
             local bounds = Tooltip.TextBounds
             Tooltip.Size = UDim2.new(0, math.min(bounds.X + 16, 300), 0, bounds.Y + 8)
         end)
